@@ -11,4 +11,5 @@ urlpatterns = [
     path('',views.AccountListAPIView.as_view()),
     #로그인
     path("login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path('logout/', TokenBlacklistView.as_view(), name='token_blacklist'),
 ]
