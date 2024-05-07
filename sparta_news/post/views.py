@@ -1,4 +1,6 @@
+from rest_framework import generics
 from rest_framework.response import Response
+
 from rest_framework import status, generics, permissions
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
@@ -10,7 +12,6 @@ from django.http import HttpResponse, Http404
 from .models import Comment
 from .serializers import CommentSerializer, PostSerializer
 from accounts.models import User
-
 
 class SpartaNewsList(generics.ListCreateAPIView):
     queryset = spartanews.objects.all()
@@ -26,6 +27,7 @@ class SpartaNewsDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = spartanews.objects.all()
     serializer_class = PostSerializer
 
+
 class CommentCreateAPIView(generics.CreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
@@ -34,3 +36,4 @@ class CommentCreateAPIView(generics.CreateAPIView):
     def perform_create(self, serializer):
         post_pk = self.kwargs.get('pk')
         serializer.save(user=self.request.user, post_id=post_pk)
+
