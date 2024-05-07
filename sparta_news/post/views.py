@@ -1,77 +1,36 @@
 from rest_framework.response import Response
-from rest_framework import status
-from .serializers import PostSerializer
+from rest_framework import status, generics, permissions
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from django.http import JsonResponse
 from .models import spartanews
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
-from django.http import HttpResponse
-
-# Create your views here.
-@csrf_exempt
-def sparta_news_list(request):
-    if request.method == 'GET':
-        news_list = spartanews.objects.all()
-        serializer = PostSerializer(news_list, many=True)
-        return JsonResponse(serializer.data, safe=False)
-
-# 게시글 생성
+from django.http import HttpResponse, Http404
+from .models import Comment
+from .serializers import CommentSerializer, PostSerializer
+from accounts.models import User
 
 
-@csrf_exempt
-def sparta_news_create(request):
-    if request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = PostSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+class SpartaNewsList(generics.ListCreateAPIView):
+    queryset = spartanews.objects.all()
+    serializer_class = PostSerializer
 
-# 게시글 상세 조회
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+class SpartaNewsDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = spartanews.objects.all()
+    serializer_class = PostSerializer
 
-@csrf_exempt
-def sparta_news_detail(request, pk):
-    try:
-        news = spartanews.objects.get(pk=pk)
-    except spartanews.DoesNotExist:
-        return HttpResponse(status=404)
+class CommentCreateAPIView(generics.CreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated]  # 인증된 사용자만 댓글 작성 가능하도록 설정
 
-    if request.method == 'GET':
-        serializer = PostSerializer(news)
-        return JsonResponse(serializer.data)
-
-# 게시글 수정
-
-
-@csrf_exempt
-def sparta_news_update(request, pk):
-    try:
-        news = spartanews.objects.get(pk=pk)
-    except spartanews.DoesNotExist:
-        return HttpResponse(status=404)
-
-    if request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = PostSerializer(news, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
-
-# 게시글 삭제
-
-
-@csrf_exempt
-def sparta_news_delete(request, pk):
-    try:
-        news = spartanews.objects.get(pk=pk)
-    except spartanews.DoesNotExist:
-        return HttpResponse(status=404)
-
-    if request.method == 'DELETE':
-        news.delete()
-        return HttpResponse(status=204)
+    def perform_create(self, serializer):
+        post_pk = self.kwargs.get('pk')
+        serializer.save(user=self.request.user, post_id=post_pk)
