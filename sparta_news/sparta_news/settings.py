@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'accounts',
     'rest_framework_simplejwt.token_blacklist',
     'post',
+    'search_engine',
 ]
 
 MIDDLEWARE = [
@@ -111,6 +112,11 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
 }
 
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],}
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -132,3 +138,14 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Celery 설정
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Redis 브로커 사용
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # Redis 백엔드 사용
+
+# Celery 시간대 설정
+CELERY_TIMEZONE = 'Asia/Seoul'  # Celery 작업의 시간대 설정
+
+# Celery 작업을 찾을 앱 설정
+CELERY_APP = 'sparta_news'  # Celery 앱의 이름 설정
+
