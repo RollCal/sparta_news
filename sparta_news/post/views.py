@@ -2,14 +2,15 @@ from rest_framework.response import Response
 from rest_framework import status, generics, permissions
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
-from django.http import JsonResponse
-from .models import spartanews
-from django.views.decorators.csrf import csrf_exempt
+from .models import spartanews, Comment
 from rest_framework.parsers import JSONParser
 from django.http import HttpResponse, Http404
-from .models import Comment
 from .serializers import CommentSerializer, PostSerializer
 from accounts.models import User
+from rest_framework.decorators import api_view
+from rest_framework.generics import CreateAPIView, UpdateAPIView
+from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
 
 
 class SpartaNewsList(generics.ListCreateAPIView):
@@ -26,11 +27,15 @@ class SpartaNewsDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = spartanews.objects.all()
     serializer_class = PostSerializer
 
-class CommentCreateAPIView(generics.CreateAPIView):
-    queryset = Comment.objects.all()
+class CreateCommentView(CreateAPIView):
     serializer_class = CommentSerializer
-    permission_classes = [permissions.IsAuthenticated]  # 인증된 사용자만 댓글 작성 가능하도록 설정
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        post_pk = self.kwargs.get('pk')
-        serializer.save(user=self.request.user, post_id=post_pk)
+        # 댓글의 게시물 ID는 URL에서 가져옵니다.
+        post_id = self.kwargs['pk']
+        post = get_object_or_404(spartanews, pk=post_id)
+        serializer.save(user=self.request.user, post=post)
+class UpdateCommentView(generics.UpdateAPIView):
+    serializer_class = CommentSerializer
+    queryset = Comment.objects.all()
