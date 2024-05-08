@@ -8,5 +8,7 @@ def get_embedding(text):
     # 텍스트 처리 -> 문서 객체 생성
     doc = nlp(text)
 
-    # 문서 객체의 벡터 변환
+    # 문서 객체의 벡터 변환(평균 값 사용)
+    embedding = doc.vector.mean(axis=0)
+
     return doc.vector
