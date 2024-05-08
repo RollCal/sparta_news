@@ -1,4 +1,6 @@
+from rest_framework import generics
 from rest_framework.response import Response
+
 from rest_framework import status, generics, permissions
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
@@ -11,7 +13,6 @@ from rest_framework.decorators import api_view
 from rest_framework.generics import CreateAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
-
 
 class SpartaNewsList(generics.ListCreateAPIView):
     queryset = spartanews.objects.all()
@@ -27,7 +28,9 @@ class SpartaNewsDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = spartanews.objects.all()
     serializer_class = PostSerializer
 
+
 class CreateCommentView(CreateAPIView):
+
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]
 
