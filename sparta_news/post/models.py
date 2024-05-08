@@ -13,11 +13,12 @@ class spartanews(models.Model):
         return f"{self.title} {self.content}"
     def __str__(self):
         return self.title
+
     def save(self, *args, **kwargs):
         # 임베딩 생성 및 저장
-        if not self.embedding:  # 임베딩이 이미 저장되어 있지 않은 경우에만 생성 및 저장
+        if not self.embedding or self.embedding is None:  # 임베딩이 없거나 None인 경우에만 생성 및 저장
             # 임베딩 생성 및 저장
-            embedding = get_embedding(self.content)
+            embedding = get_embedding(self.get_text_representation())
             self.embedding = embedding.tobytes()
 
         super().save(*args, **kwargs)
