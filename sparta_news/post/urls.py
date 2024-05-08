@@ -7,4 +7,5 @@ urlpatterns = [
     path('', views.SpartaNewsList.as_view(), name='sparta_news_list'),
     path('<int:pk>/', views.SpartaNewsDetail.as_view(), name='sparta_news_detail'),
     path('<int:pk>/comment/', views.CreateCommentView.as_view(), name='sparta_comment'),
+    path('<int:pk>/commentlist/', views.CommentListView.as_view(), name='commentlist'),
 ]

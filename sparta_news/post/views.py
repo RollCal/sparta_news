@@ -39,3 +39,9 @@ class CreateCommentView(CreateAPIView):
 class UpdateCommentView(generics.UpdateAPIView):
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
+
+class CommentListView(APIView):
+    def get(self, request, pk):
+        comments = Comment.objects.filter(post=pk)
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data)
