@@ -1,8 +1,10 @@
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics, permissions
 from .serializers import AccountsSerializer
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
+from post.models import Comment
+from .serializers import LikedCommentSerializer
 
 
 
@@ -23,4 +25,10 @@ class AccountListAPIView(APIView):
             user.save()  # 조작한 데이터를 DB에 저장
             return Response(data, status=status.HTTP_201_CREATED)
 
+class LikedCommentListView(generics.ListAPIView):
+    serializer_class = LikedCommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        user = self.request.user
+        return user.liked_comments.all()
