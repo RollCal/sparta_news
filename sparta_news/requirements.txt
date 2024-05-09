@@ -37,6 +37,7 @@ idna==3.7
 ipython==8.18.1
 jedi==0.19.1
 Jinja2==3.1.4
+ko-core-news-sm @ https://github.com/explosion/spacy-models/releases/download/ko_core_news_sm-3.7.0/ko_core_news_sm-3.7.0-py3-none-any.whl#sha256=b1a15a4987a8f9835031a6bd2fe57fe158097ab5304221c41df1bd4aab8cf458
 kombu==5.3.7
 langcodes==3.4.0
 language_data==1.2.0
