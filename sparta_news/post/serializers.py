@@ -20,7 +20,7 @@ class CommentdetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ['id', 'content', 'created_at', 'liked_by', 'total_likes']  # 'total_likes' 필드 추가
+        fields = ['id', 'content', 'created_at', 'total_likes']  # 'total_likes' 필드 추가
         read_only_fields = ['post', 'user']
 
     def get_total_likes(self, obj):
@@ -32,7 +32,7 @@ class PostdetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = spartanews
-        fields = ['id', 'content', 'created_at', 'liked_by', 'total_likes']  # 'total_likes' 필드 추가
+        fields = ['id', 'content', 'created_at', 'total_likes']  # 'total_likes' 필드 추가
         read_only_fields = ['post', 'user']
 
     def get_total_likes(self, obj):

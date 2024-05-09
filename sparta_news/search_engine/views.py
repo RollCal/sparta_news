@@ -3,28 +3,29 @@ from post.models import spartanews
 from .serializers import DocumentSerializer
 from . import search
 from rest_framework.response import Response
+from django.http import JsonResponse
+from elasticsearch_dsl import Search
+from django.views import View
 
 
-class SearchDocumentView(generics.ListAPIView):
-    serializer_class = DocumentSerializer
+class SearchDocumentView(View):
+    def get(self, request):
+        query = request.GET.get('query')
 
-    def get_queryset(self):
-        query = self.request.GET.get('query')
-        if query:
-            # search.py 파일에서 search 함수를 사용하여 검색 수행
-            search_results = search.search(query)
+        # Elasticsearch에서 검색 쿼리 생성
+        s = Search(index='spartanews-index')
 
-            # 검색된 문서의 ID 목록 가져오기
-            document_ids = [result.id for result in search_results]
+        # 제목과 내용에 대한 검색 쿼리 설정
+        s = s.query('multi_match', query=query, fields=['title', 'content'])
 
-            # 해당 문서들 필터링
-            queryset = spartanews.objects.filter(id__in=document_ids)
-        else:
-            queryset = spartanews.objects.none()  # 빈 쿼리셋 반환
+        # Elasticsearch에서 검색 실행
+        response = s.execute()
 
-        return queryset
+        # 검색 결과 처리
+        relevant_results = []
+        for hit in response:
+            relevant_results.append(hit)
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response({'results': serializer.data})
+        # 검색 결과를 직렬화하여 JSON 형태로 반환
+        serializer = DocumentSerializer(relevant_results, many=True)
+        return JsonResponse({'results': serializer.data})
