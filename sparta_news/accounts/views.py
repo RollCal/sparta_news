@@ -32,3 +32,11 @@ class LikedCommentListView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return user.liked_comments.all()
+
+class LikedPostListView(generics.ListAPIView):
+    serializer_class = LikedCommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return user.liked.all()
