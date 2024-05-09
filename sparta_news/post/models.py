@@ -8,10 +8,12 @@ class spartanews(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    point = models.IntegerField(default=0)
     embedding = models.BinaryField(null=True, blank=True)
     liked_by = models.ManyToManyField(get_user_model(), related_name='liked_posts', blank=True)
     def get_text_representation(self):
         return f"{self.title} {self.content}"
+      
     def __str__(self):
         return self.title
 

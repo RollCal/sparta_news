@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import User
 from django.contrib.auth import get_user_model
-from post.models import Comment
+from post.models import Comment, spartanews
 
 class AccountsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,3 +19,8 @@ class LikedCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['id', 'content', 'created_at']
+
+class LikedPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = spartanews
+        fields = '__all__'

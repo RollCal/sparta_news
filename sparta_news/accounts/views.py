@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from post.models import Comment
 from .serializers import LikedCommentSerializer
+from .serializers import LikedPostSerializer
 
 
 
@@ -34,9 +35,11 @@ class LikedCommentListView(generics.ListAPIView):
         return user.liked_comments.all()
 
 class LikedPostListView(generics.ListAPIView):
-    serializer_class = LikedCommentSerializer
+    serializer_class = LikedPostSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
+
         return user.liked.all()
+

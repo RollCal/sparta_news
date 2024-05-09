@@ -20,6 +20,7 @@ cymem==2.0.8
 decorator==5.1.1
 distro==1.9.0
 Django==4.2.11
+django-crontab==0.7.1
 django-extensions==3.2.3
 django-redis==5.4.0
 django-seed==0.3.1
