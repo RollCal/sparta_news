@@ -74,6 +74,8 @@ class LikePostAPIView(APIView):
             return Response({'status': 'unliked'})
         else:
             post.liked_by.add(request.user)
+            post.point += 3
+            post.save()
             return Response({'status': 'liked'})
 
 class LikeCommentAPIView(APIView):
