@@ -8,7 +8,7 @@ from .models import spartanews, Comment
 from .serializers import PostSerializer, CommentSerializer
 
 class SpartaNewsList(generics.ListCreateAPIView):
-    queryset = spartanews.objects.all()
+    queryset = spartanews.objects.all().order_by('-point')
     serializer_class = PostSerializer
     permission_classes = [AllowAny]
 
@@ -17,7 +17,11 @@ class SpartaNewsList(generics.ListCreateAPIView):
             return Response({"detail": "로그인이 필요합니다."}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        #생성된 게시글 데이터를 obj에 담는다
+        obj = serializer.save()
+        # 포인트 추가 후 저장
+        obj.point+=5
+        obj.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class SpartaNewsDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -42,7 +46,10 @@ class CreateCommentView(CreateAPIView):
     def perform_create(self, serializer):
         post_id = self.kwargs['pk']
         post = get_object_or_404(spartanews, pk=post_id)
-        serializer.save(user=self.request.user, post=post)
+        obj = serializer.save(user=self.request.user, post=post)
+        obj.post.point += 3
+        obj.post.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class UpdateCommentView(generics.UpdateAPIView):
     serializer_class = CommentSerializer
@@ -56,3 +63,28 @@ class CommentListView(APIView):
         comments = Comment.objects.filter(post=pk)
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
+
+
+class LikePostAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, pk):
+        post = get_object_or_404(spartanews, pk=pk)
+        if request.user in post.liked_by.all():
+            post.liked_by.remove(request.user)
+            return Response({'status': 'unliked'})
+        else:
+            post.liked_by.add(request.user)
+            post.point += 3
+            post.save()
+            return Response({'status': 'liked'})
+
+class LikeCommentAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, pk):
+        post = get_object_or_404(Comment, pk=pk)
+        if request.user in post.liked_by.all():
+            post.liked_by.remove(request.user)
+            return Response({'status': 'unliked'})
+        else:
+            post.liked_by.add(request.user)
+            return Response({'status': 'liked'})

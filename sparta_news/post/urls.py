@@ -8,4 +8,7 @@ urlpatterns = [
     path('<int:pk>/', views.SpartaNewsDetail.as_view(), name='sparta_news_detail'),
     path('<int:pk>/comment/', views.CreateCommentView.as_view(), name='sparta_comment'),
     path('<int:pk>/commentlist/', views.CommentListView.as_view(), name='commentlist'),
+    path('<int:pk>/like/', views.LikePostAPIView.as_view(), name='like-post'),
+    path('<int:pk>/comment/like/', views.LikeCommentAPIView.as_view(), name='like-comment'),
 ]
+
