@@ -1,4 +1,4 @@
-from rest_framework import generics, status
+from rest_framework import generics, status, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView
@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from .models import spartanews, Comment
 from .serializers import PostSerializer, CommentSerializer, CommentdetailSerializer, PostdetailSerializer
+from django.db.models import Q
 
 class SpartaNewsList(generics.ListCreateAPIView):
     queryset = spartanews.objects.all()
@@ -82,7 +83,7 @@ class LikePostAPIView(APIView):
 
 class LikeCommentAPIView(APIView):
     permission_classes = [IsAuthenticated]
-    def post(self, request, post_pk, comment_pk):
+    def post(self, request, comment_pk):
         comment = get_object_or_404(Comment, pk=comment_pk)
         if request.user in comment.liked_by.all():
             comment.liked_by.remove(request.user)
@@ -90,3 +91,26 @@ class LikeCommentAPIView(APIView):
         else:
             comment.liked_by.add(request.user)
             return Response({'status': 'liked'})
+
+class PostSearchView(generics.ListAPIView):
+    queryset = spartanews.objects.all()
+    serializer_class = PostSerializer
+    filter_backends = [filters.SearchFilter]  # SearchFilter를 사용하여 검색 활성화
+    search_fields = ['title', 'content']  # 검색할 필드들을 지정
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query_params = self.request.query_params
+
+        # 검색어가 전달되었는지 확인하고 필터링 수행
+        search_term = query_params.get('search', None)
+        if search_term:
+            # 검색어를 공백으로 분리하여 각 단어를 검색하도록 설정
+            search_words = search_term.split()
+            # 각 단어를 포함하는지 확인하는 Q 객체 생성
+            q_objects = Q()
+            for word in search_words:
+                q_objects |= Q(title__icontains=word) | Q(content__icontains=word)
+            # 필터링 수행
+            queryset = queryset.filter(q_objects)
+        return queryset
