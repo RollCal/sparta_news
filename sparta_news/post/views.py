@@ -56,3 +56,26 @@ class CommentListView(APIView):
         comments = Comment.objects.filter(post=pk)
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
+
+
+class LikePostAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, pk):
+        post = get_object_or_404(spartanews, pk=pk)
+        if request.user in post.liked_by.all():
+            post.liked_by.remove(request.user)
+            return Response({'status': 'unliked'})
+        else:
+            post.liked_by.add(request.user)
+            return Response({'status': 'liked'})
+
+class LikeCommentAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, pk):
+        post = get_object_or_404(Comment, pk=pk)
+        if request.user in post.liked_by.all():
+            post.liked_by.remove(request.user)
+            return Response({'status': 'unliked'})
+        else:
+            post.liked_by.add(request.user)
+            return Response({'status': 'liked'})

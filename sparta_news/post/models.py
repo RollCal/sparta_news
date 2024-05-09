@@ -9,6 +9,7 @@ class spartanews(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     embedding = models.BinaryField(null=True, blank=True)
+    liked_by = models.ManyToManyField(get_user_model(), related_name='liked_posts', blank=True)
     def get_text_representation(self):
         return f"{self.title} {self.content}"
     def __str__(self):
@@ -29,7 +30,7 @@ class Comment(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     embedding = models.BinaryField(null=True, blank=True)
-
+    liked_by = models.ManyToManyField(get_user_model(), related_name='liked_comments', blank=True)
     def __str__(self):
         return f'{self.user.username}님의 {self.post.title}에 대한 댓글'
 
