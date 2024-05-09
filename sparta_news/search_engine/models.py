@@ -1,6 +1,7 @@
-from django.db import models
 from post.models import spartanews, Comment  # spartanews와 Comment 모델 import
 from sparta_news.embedding import get_embedding
+from django.db import models
+from elasticsearch_dsl import Document, Text
 
 class Document(models.Model):
     text = models.TextField()
@@ -20,3 +21,15 @@ class Document(models.Model):
         self.embedding = embedding.tobytes() if embedding is not None else None
 
         super().save(*args, **kwargs)
+
+
+class SpartanewsDocument(Document):
+    title = Text()
+    content = Text()
+
+    class Index:
+        name = 'spartanews-index'
+
+    def save(self, *args, **kwargs):
+        return super().save(*args, **kwargs)
+

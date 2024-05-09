@@ -1,4 +1,3 @@
-from rest_framework import serializers
 from django.db import models
 from django.contrib.auth import get_user_model
 from sparta_news.embedding import get_embedding

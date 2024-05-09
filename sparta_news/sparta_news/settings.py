@@ -149,3 +149,8 @@ CELERY_TIMEZONE = 'Asia/Seoul'  # Celery 작업의 시간대 설정
 # Celery 작업을 찾을 앱 설정
 CELERY_APP = 'sparta_news'  # Celery 앱의 이름 설정
 
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'localhost:9200'
+    },
+}
