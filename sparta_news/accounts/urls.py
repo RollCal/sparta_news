@@ -14,4 +14,5 @@ urlpatterns = [
     path("login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path('logout/', TokenBlacklistView.as_view(), name='token_blacklist'),
     path('comments/', views.LikedCommentListView.as_view(), name='comments'),
+    path('post_list/liked/', views.LikedPostListView.as_view(), name='user-likes'),
 ]
