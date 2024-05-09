@@ -14,13 +14,17 @@ from .serializers import CommentSerializer, PostSerializer
 from accounts.models import User
 
 class SpartaNewsList(generics.ListCreateAPIView):
-    queryset = spartanews.objects.all()
+    queryset = spartanews.objects.all().order_by('-point')
     serializer_class = PostSerializer
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        #생성된 게시글 데이터를 obj에 담는다
+        obj = serializer.save()
+        # 포인트 추가 후 저장
+        obj.point+=5
+        obj.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class SpartaNewsDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -35,5 +39,7 @@ class CommentCreateAPIView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         post_pk = self.kwargs.get('pk')
-        serializer.save(user=self.request.user, post_id=post_pk)
-
+        obj = serializer.save(user=self.request.user, post_id=post_pk)
+        obj.post.point += 3
+        obj.post.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

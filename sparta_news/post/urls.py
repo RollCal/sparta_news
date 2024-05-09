@@ -7,4 +7,4 @@ urlpatterns = [
     path('', views.SpartaNewsList.as_view(), name='sparta_news_list'),
     path('<int:pk>/', views.SpartaNewsDetail.as_view(), name='sparta_news_detail'),
     path('<int:pk>/comment/', views.CommentCreateAPIView.as_view(), name='sparta_comment'),
-
+]
