@@ -8,10 +8,20 @@ def get_embedding(text):
     doc = nlp(text)
     print(doc.vector.shape)
     # 문서 객체의 벡터 변환(평균 값 사용)
-    embedding = doc.vector.mean(axis=0)
+    embedding = doc.vector
     print(embedding.shape)
+
     if embedding is not None:
         return embedding
     else:
         # 예외 처리: 임베딩이 None인 경우
         raise ValueError("Failed to generate embedding for the text")
+embeddings = []
+sentences = ["고양이와 산책", "언 맥주", "Take walk with cat"]
+for sentence in sentences:
+    embedding = get_embedding(sentence)
+    embeddings.append(embedding)
+target=embeddings[0]
+for i in range(1,3):
+    dist = (sum((target-embeddings[i])**2))**0.5
+    print(dist)
