@@ -24,9 +24,10 @@
 
 ### [우리팀 노션](https://www.notion.so/19067e7e45624c94978963954accfe9b?v=7375fcd6ceaf4dbba3c86b8c0fd12246&pvs=4)
 
+<img width="638" alt="Screenshot 2024-05-10 at 12 52 12 PM" src="https://github.com/RollCal/sparta_news/assets/75312246/1668ba64-e82f-4558-9161-c7edf7b536f1">
 
 
-<img width="647" alt="Screenshot 2024-05-10 at 12 52 12 PM" src="https://github.com/RollCal/sparta_news/assets/75312246/6dd188d3-3bea-4261-9b81-a272f5fb95ea">
+
 
 
 ### 로그인
