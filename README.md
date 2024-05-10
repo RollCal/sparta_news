@@ -3,7 +3,9 @@
 
 <img width="648" alt="Screenshot 2024-05-10 at 12 09 08 PM" src="https://github.com/RollCal/sparta_news/assets/75312246/4024a63b-e296-4541-8d16-174087dbeb05">
 ### 팀(칸반 참조)
+
 ---
+
 한승주 - accounts, 포인트기능(포인트 양에 따라 포스트정렬) by Crontab
 
 정윤기 - 기사CRUD, Post관련, 좋아요와 찜한 리스트(협업)
