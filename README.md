@@ -1,7 +1,9 @@
 # Sparta_News
 
+### ERD
 
 <img width="648" alt="Screenshot 2024-05-10 at 12 09 08 PM" src="https://github.com/RollCal/sparta_news/assets/75312246/4024a63b-e296-4541-8d16-174087dbeb05">
+
 ### 팀(칸반 참조)
 
 ---
@@ -22,7 +24,7 @@
 
 ### [우리팀 노션](https://www.notion.so/19067e7e45624c94978963954accfe9b?v=7375fcd6ceaf4dbba3c86b8c0fd12246&pvs=4)
 
-### ERD
+
 
 <img width="647" alt="Screenshot 2024-05-10 at 12 52 12 PM" src="https://github.com/RollCal/sparta_news/assets/75312246/6dd188d3-3bea-4261-9b81-a272f5fb95ea">
 
