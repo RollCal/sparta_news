@@ -1,4 +1,3 @@
-from rest_framework import serializers
 from django.db import models
 from django.contrib.auth import get_user_model
 from sparta_news.embedding import get_embedding
@@ -16,6 +15,9 @@ class spartanews(models.Model):
       
     def __str__(self):
         return self.title
+
+    def total_likes(self):
+        return self.liked_by.count()
 
     def save(self, *args, **kwargs):
         # 임베딩 생성 및 저장
@@ -36,6 +38,8 @@ class Comment(models.Model):
     def __str__(self):
         return f'{self.user.username}님의 {self.post.title}에 대한 댓글'
 
+    def total_likes(self):
+        return self.liked_by.count()
     def save(self, *args, **kwargs):
         if not self.embedding:  # 임베딩이 이미 저장되어 있지 않은 경우에만 생성 및 저장
             # 임베딩 생성 및 저장
