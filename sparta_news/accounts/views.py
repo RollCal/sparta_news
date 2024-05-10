@@ -7,6 +7,7 @@ from post.models import Comment
 from .serializers import LikedCommentSerializer, SavedCommentSerializer, LikedPostSerializer, SavedPostSerializer
 
 
+
 class AccountListAPIView(APIView):
     def post(self, request):
         # 회원가입하기
@@ -62,6 +63,4 @@ class SavedPostListView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return user.saved_posts.all()
-
-
 

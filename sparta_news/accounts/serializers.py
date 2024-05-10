@@ -23,6 +23,7 @@ class LikedCommentSerializer(serializers.ModelSerializer):
 class LikedPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = spartanews
+
         fields = ['id', 'content', 'created_at']
 
 class SavedCommentSerializer(serializers.ModelSerializer):
@@ -34,3 +35,4 @@ class SavedPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = spartanews
         fields = ['id', 'content', 'created_at']
+

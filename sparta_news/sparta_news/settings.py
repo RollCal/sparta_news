@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'post',
     'search_engine',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -128,6 +129,10 @@ USE_I18N = True
 
 USE_TZ = True
 
+
+CRONJOBS = [
+    ('*/5 * * * *', 'post.cron.update_news_point', '>> /Users/t2023-m0088/Desktop/sparta_news/data.log')
+]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
