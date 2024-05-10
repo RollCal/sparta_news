@@ -4,9 +4,7 @@ from .serializers import AccountsSerializer
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from post.models import Comment
-from .serializers import LikedCommentSerializer
-
-
+from .serializers import LikedCommentSerializer, SavedCommentSerializer, LikedPostSerializer, SavedPostSerializer
 
 
 class AccountListAPIView(APIView):
@@ -25,6 +23,8 @@ class AccountListAPIView(APIView):
             user.save()  # 조작한 데이터를 DB에 저장
             return Response(data, status=status.HTTP_201_CREATED)
 
+
+# 댓글 좋아요 목록
 class LikedCommentListView(generics.ListAPIView):
     serializer_class = LikedCommentSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -33,10 +33,35 @@ class LikedCommentListView(generics.ListAPIView):
         user = self.request.user
         return user.liked_comments.all()
 
-class LikedPostListView(generics.ListAPIView):
-    serializer_class = LikedCommentSerializer
+
+# 댓글 저장(찜) 목록
+class SavedCommentListView(generics.ListAPIView):
+    serializer_class = SavedCommentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
-        return user.liked.all()
+        return user.saved_comments.all()
+
+
+# 기사 좋아요 목록
+class LikedPostListView(generics.ListAPIView):
+    serializer_class = LikedPostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return user.liked_posts.all()
+
+
+# 기사 저장(찜) 목록
+class SavedPostListView(generics.ListAPIView):
+    serializer_class = SavedPostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return user.saved_posts.all()
+
+
+

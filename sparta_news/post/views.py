@@ -9,7 +9,7 @@ from .serializers import PostSerializer, CommentSerializer, CommentdetailSeriali
 from django.db.models import Q
 
 class SpartaNewsList(generics.ListCreateAPIView):
-    queryset = spartanews.objects.all()
+    queryset = spartanews.objects.all().order_by('-point')
     serializer_class = PostSerializer
     permission_classes = [AllowAny]
 
@@ -18,13 +18,17 @@ class SpartaNewsList(generics.ListCreateAPIView):
             return Response({"detail": "로그인이 필요합니다."}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        #생성된 게시글 데이터를 obj에 담는다
+        obj = serializer.save()
+        # 포인트 추가 후 저장
+        obj.point+=5
+        obj.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class SpartaNewsDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = spartanews.objects.all()
     serializer_class = PostdetailSerializer
-    permission_classes = [AllowAny]  
+    permission_classes = [AllowAny]
 
     def update(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -43,7 +47,10 @@ class CreateCommentView(CreateAPIView):
     def perform_create(self, serializer):
         post_id = self.kwargs['pk']
         post = get_object_or_404(spartanews, pk=post_id)
-        serializer.save(user=self.request.user, post=post)
+        obj = serializer.save(user=self.request.user, post=post)
+        obj.post.point += 3
+        obj.post.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -79,11 +86,16 @@ class LikePostAPIView(APIView):
             return Response({'status': 'unliked'})
         else:
             post.liked_by.add(request.user)
+            post.point += 3
+            post.save()
             return Response({'status': 'liked'})
+
 
 class LikeCommentAPIView(APIView):
     permission_classes = [IsAuthenticated]
-    def post(self, request, comment_pk):
+
+    def post(self, request, *args, **kwargs):
+        comment_pk = kwargs.get('comment_pk')
         comment = get_object_or_404(Comment, pk=comment_pk)
         if request.user in comment.liked_by.all():
             comment.liked_by.remove(request.user)
@@ -91,6 +103,7 @@ class LikeCommentAPIView(APIView):
         else:
             comment.liked_by.add(request.user)
             return Response({'status': 'liked'})
+
 
 class PostSearchView(generics.ListAPIView):
     queryset = spartanews.objects.all()
@@ -114,3 +127,30 @@ class PostSearchView(generics.ListAPIView):
             # 필터링 수행
             queryset = queryset.filter(q_objects)
         return queryset
+
+class SavePostAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, pk):
+        post = get_object_or_404(spartanews, pk=pk)
+        if request.user in post.saved_by.all():
+            post.saved_by.remove(request.user)
+            return Response({'status': 'unsaved'})
+        else:
+            post.saved_by.add(request.user)
+            post.point += 3
+            post.save()
+            return Response({'status': 'saved'})
+
+
+class SaveCommentAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        comment_pk = kwargs.get('comment_pk')
+        comment = get_object_or_404(Comment, pk=comment_pk)
+        if request.user in comment.saved_by.all():
+            comment.saved_by.remove(request.user)
+            return Response({'status': 'unsaved'})
+        else:
+            comment.saved_by.add(request.user)
+            return Response({'status': 'saved'})

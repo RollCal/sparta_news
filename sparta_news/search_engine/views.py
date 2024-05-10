@@ -1,42 +1,33 @@
+from rest_framework import generics
+from .models import Document
+from post.models import spartanews
 from .serializers import DocumentSerializer
-from django.http import JsonResponse
-from elasticsearch_dsl import Search
-from django.views import View
-from elasticsearch import Elasticsearch
+from . import search
+from rest_framework.response import Response
+from django.db.models import Q
 
-def search(request):
-    # Elasticsearch 클라이언트 설정
-    es = Elasticsearch(['localhost:8000'])  # Elasticsearch 호스트와 포트
 
-    # Elasticsearch 쿼리 실행
-    query = request.GET.get('query', '')  # URL에서 쿼리 가져오기
-    results = es.search(index='spartanews-index', body={'query': {'match': {'content': query}}})
+class SearchDocumentView(generics.RetrieveAPIView):
+    serializer_class = DocumentSerializer
 
-    # 결과 처리
-    hits = results['hits']['hits']
-    search_results = [hit['_source'] for hit in hits]
+    def retrieve(self, request, pk=None):
+        검색어 = request.GET.get('query')
 
-    # JSON 형식으로 결과 반환
-    return JsonResponse({'results': search_results})
-class SearchDocumentView(View):
-    def get(self, request):
-        query = request.GET.get('query')
+        # search.py 파일에서 search 함수를 사용하여 검색 수행
+        검색결과 = search.search(검색어)
 
-        # Elasticsearch에서 검색 쿼리 생성
-        s = Search(index='spartanews-index')
+        # 검색 결과가 실제 검색어와 관련이 있는지 확인하여 필터링
+        관련있는_검색결과 = [item for item in 검색결과 if 검색어 in item.content or 검색어 in item.title]
+# 튜터님 팁: 리스트, 튜플 대조 -> 검색어와 유사도
+        # 검색 결과를 SpartanNews 객체의 ID로 변환
+        관련있는_검색결과_ids = [item.id for item in 관련있는_검색결과]
 
-        # 제목과 내용에 대한 검색 쿼리 설정
-        s = s.query('multi_match', query=query, fields=['title', 'content'])
+        # 검색 결과(ID) 기반으로 SpartanNews 객체 필터링
+        해당_문서들 = spartanews.objects.filter(id__in=관련있는_검색결과_ids)
 
-        # Elasticsearch에서 검색 실행
-        response = s.execute()
+        # 검색된 문서만 직렬화
+        직렬화된_데이터 = self.serializer_class(해당_문서들, many=True).data
 
-        # 검색 결과 처리
-        relevant_results = []
-        for hit in response:
-            relevant_results.append(hit)
-
-        # 검색 결과를 직렬화하여 JSON 형태로 반환
-        serializer = DocumentSerializer(relevant_results, many=True)
-        return JsonResponse({'results': serializer.data})
-
+        return Response({
+            'results': 직렬화된_데이터
+        })
